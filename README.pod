@@ -18,6 +18,7 @@ or module
   my $count = count_module_dependents('JSON::Tiny'); # or count_dist_dependents('JSON-Tiny')
   
   # From the commandline
+  $ perl -MDist::Dependents=find_module_dependents -E'say for @{find_module_dependents("JSON::Tiny")}'
   $ perl -MDist::Dependents=count_dist_dependents -E'say count_dist_dependents("JSON-Tiny")'
 
 =head1 DESCRIPTION
@@ -29,7 +30,14 @@ exportable on demand.
 
 This module uses the MetaCPAN API, and must perform several requests
 recursively, so it may take a long time (sometimes minutes) to complete. If the
-function encounters HTTP errors or is unable to connect it will die.
+function encounters HTTP errors (including when querying a nonexistent module
+or distribution) or is unable to connect, it will die.
+
+This module will only find distributions that explicitly list prerequisites in
+metadata; C<dynamic_config> will not be used. Also, it assumes modules are
+"well-behaved" and thus declare all provided modules in the C<provides>
+metadata, and only modules which they are authorized to provide. Any
+distributions that do not follow this behavior may lead to incorrect results.
 
 =head1 FUNCTIONS
 

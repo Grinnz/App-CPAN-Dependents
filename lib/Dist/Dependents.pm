@@ -5,14 +5,15 @@ use warnings;
 use Carp 'croak';
 use Exporter 'import';
 use HTTP::Tiny;
-use JSON::Tiny qw(decode_json encode_json);
+use JSON::Tiny 'decode_json', 'encode_json';
+use URI::Escape 'uri_escape';
 
 our $VERSION = '0.001';
 
 our @EXPORT_OK = qw(count_dist_dependents count_module_dependents
 	find_dist_dependents find_module_dependents find_all_dependents);
 
-use constant METACPAN_ENDPOINT_RELEASE => 'http://api.metacpan.org/v0/release/';
+use constant METACPAN_API_ENDPOINT => 'http://api.metacpan.org/v0/';
 use constant DEBUG => $ENV{DIST_DEPENDENTS_DEBUG} ? 1 : 0;
 
 sub count_dist_dependents { scalar @{find_dist_dependents(@_)} }
@@ -30,6 +31,7 @@ sub find_all_dependents {
 		my $modules = _dist_modules($http, $dist);
 		_find_dependents($http, $modules, \%dependent_dists, \%find_options);
 	} elsif (defined $module) {
+		my $dist = _module_dist($http, $module); # check if module is valid
 		_find_dependents($http, [$module], \%dependent_dists, \%find_options);
 	} else {
 		croak 'No module or distribution defined';
@@ -60,7 +62,7 @@ sub _find_dependents {
 
 sub _module_dependents {
 	my ($http, $modules, $options) = @_;
-	my $url = METACPAN_ENDPOINT_RELEASE . '_search';
+	my $url = METACPAN_API_ENDPOINT . 'release/_search';
 	my @relationships = ('requires');
 	push @relationships, 'recommends' if $options->{recommends};
 	push @relationships, 'suggests' if $options->{suggests};
@@ -98,10 +100,18 @@ sub _module_dependents {
 
 sub _dist_modules {
 	my ($http, $dist) = @_;
-	my $url = METACPAN_ENDPOINT_RELEASE . $dist;
+	my $url = METACPAN_API_ENDPOINT . 'release/' . uri_escape $dist;
 	my $response = $http->get($url);
 	_http_err($response) unless $response->{success};
 	return decode_json($response->{content})->{provides} // [];
+}
+
+sub _module_dist {
+	my ($http, $module) = @_;
+	my $url = METACPAN_API_ENDPOINT . 'module/' . uri_escape $module;
+	my $response = $http->get($url);
+	_http_err($response) unless $response->{success};
+	return decode_json($response->{content})->{distribution};
 }
 
 sub _http_err {
@@ -136,6 +146,7 @@ or module
   my $count = count_module_dependents('JSON::Tiny'); # or count_dist_dependents('JSON-Tiny')
   
   # From the commandline
+  $ perl -MDist::Dependents=find_module_dependents -E'say for @{find_module_dependents("JSON::Tiny")}'
   $ perl -MDist::Dependents=count_dist_dependents -E'say count_dist_dependents("JSON-Tiny")'
 
 =head1 DESCRIPTION
@@ -147,7 +158,14 @@ exportable on demand.
 
 This module uses the MetaCPAN API, and must perform several requests
 recursively, so it may take a long time (sometimes minutes) to complete. If the
-function encounters HTTP errors or is unable to connect it will die.
+function encounters HTTP errors (including when querying a nonexistent module
+or distribution) or is unable to connect, it will die.
+
+This module will only find distributions that explicitly list prerequisites in
+metadata; C<dynamic_config> will not be used. Also, it assumes modules are
+"well-behaved" and thus declare all provided modules in the C<provides>
+metadata, and only modules which they are authorized to provide. Any
+distributions that do not follow this behavior may lead to incorrect results.
 
 =head1 FUNCTIONS
 
