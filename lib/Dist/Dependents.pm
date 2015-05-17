@@ -173,9 +173,9 @@ distributions that do not follow this behavior may lead to incorrect results.
 
   my $dependents = find_all_dependents(module => 'JSON::Tiny', recommends => 1);
 
-Find all dependent modules. This function is wrapped by the other functions in
-this module, but may also be used directly. Returns an array reference of
-distribution names. The following parameters are accepted:
+Find all dependent distributions. This function is wrapped by the other
+functions in this module, but may also be used directly. Returns an array
+reference of distribution names. The following parameters are accepted:
 
 =over
 
@@ -225,16 +225,17 @@ parameters to pass.
   my $count = count_dist_dependents('JSON-Tiny', { recommends => 1 });
 
 Wrapper function that calls L</"find_all_dependents"> with the specified
-distribution name, and returns the number of dependents found. Optionally, the
-second argument may be a hash reference of additional parameters to pass.
+distribution name, and returns the number of dependent distributions found.
+Optionally, the second argument may be a hash reference of additional
+parameters to pass.
 
 =head2 count_module_dependents
 
   my $count = count_module_dependents('JSON::Tiny', { recommends => 1 });
 
 Wrapper function that calls L</"find_all_dependents"> with the specified module
-name, and returns the number of dependents found. Optionally, the second
-argument may be a hash reference of additional parameters to pass.
+name, and returns the number of dependent distributions found. Optionally, the
+second argument may be a hash reference of additional parameters to pass.
 
 =head1 DEBUGGING
 
@@ -254,4 +255,4 @@ the terms of the Artistic License version 2.0.
 
 =head1 SEE ALSO
 
-L<Test::DependentModules>, L<MetaCPAN::Client>
+L<Test::DependentModules>, L<MetaCPAN::Client>, L<CPAN::Meta::Spec>
