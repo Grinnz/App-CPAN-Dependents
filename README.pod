@@ -1,0 +1,124 @@
+=pod
+
+=head1 NAME
+
+Dist::Dependents - Recursively find all reverse dependencies for a distribution
+or module
+
+=head1 SYNOPSIS
+
+  use Dist::Dependents 'find_all_dependents';
+  my $dependents = find_all_dependents(module => 'JSON::Tiny'); # or dist => 'JSON-Tiny'
+  print "Distributions dependent on JSON::Tiny: @$dependents\n";
+  
+  use Dist::Dependents 'find_dist_dependents';
+  my $dependents = find_dist_dependents('JSON-Tiny'); # or find_module_dependents('JSON::Tiny')
+  
+  use Dist::Dependents 'count_module_dependents';
+  my $count = count_module_dependents('JSON::Tiny'); # or count_dist_dependents('JSON-Tiny')
+  
+  # From the commandline
+  $ perl -MDist::Dependents=count_dist_dependents -E'say count_dist_dependents("JSON-Tiny")'
+
+=head1 DESCRIPTION
+
+L<Dist::Dependents> provides the function L</"find_all_dependents"> and several
+wrapper functions for the purpose of determining all distributions which are
+dependent on a particular CPAN distribution or module. All functions are
+exportable on demand.
+
+This module uses the MetaCPAN API, and must perform several requests
+recursively, so it may take a long time (sometimes minutes) to complete. If the
+function encounters HTTP errors or is unable to connect it will die.
+
+=head1 FUNCTIONS
+
+=head2 find_all_dependents
+
+  my $dependents = find_all_dependents(module => 'JSON::Tiny', recommends => 1);
+
+Find all dependent modules. This function is wrapped by the other functions in
+this module, but should be used directly if you wish to specify custom
+parameters. Returns an array reference of distribution names. The following
+parameters are accepted:
+
+=over
+
+=item module
+
+The module name to find dependents for. Mutually exclusive with C<dist>.
+
+=item dist
+
+The distribution to find dependents for. Mutually exclusive with C<module>.
+
+=item http
+
+Optional L<HTTP::Tiny> object to use for querying MetaCPAN. If not specified, a
+default L<HTTP::Tiny> object will be used.
+
+=item recommends
+
+Boolean value, if true then C<recommends> prerequisites will be considered in
+the results. Defaults to false.
+
+=item suggests
+
+Boolean value, if true then C<suggests> prerequisites will be considered in the
+results. Defaults to false.
+
+=back
+
+=head2 find_dist_dependents
+
+  my $dependents = find_dist_dependents('JSON-Tiny', { recommends => 1 });
+
+Wrapper function that calls L</"find_all_dependents"> with the specified
+distribution name. Optionally, the second argument may be a hash reference of
+additional parameters to pass.
+
+=head2 find_module_dependents
+
+  my $dependents = find_module_dependents('JSON::Tiny', { recommends => 1 });
+
+Wrapper function that calls L</"find_all_dependents"> with the specified module
+name. Optionally, the second argument may be a hash reference of additional
+parameters to pass.
+
+=head2 count_dist_dependents
+
+  my $count = count_dist_dependents('JSON-Tiny', { recommends => 1 });
+
+Wrapper function that calls L</"find_all_dependents"> with the specified
+distribution name, and returns the number of dependents found. Optionally, the
+second argument may be a hash reference of additional parameters to pass.
+
+=head2 count_module_dependents
+
+  my $count = count_module_dependents('JSON::Tiny', { recommends => 1 });
+
+Wrapper function that calls L</"find_all_dependents"> with the specified module
+name, and returns the number of dependents found. Optionally, the second
+argument may be a hash reference of additional parameters to pass.
+
+=head1 DEBUGGING
+
+The environment variable C<DIST_DEPENDENTS_DEBUG> can be set to C<1> to print
+information to STDERR as it is retrieved.
+
+=head1 AUTHOR
+
+Dan Book, C<dbook@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2015, Dan Book.
+
+This library is free software; you may redistribute it and/or modify it under
+the terms of the Artistic License version 2.0.
+
+=head1 SEE ALSO
+
+L<Test::DependentModules>, L<MetaCPAN::Client>
+
+=cut
