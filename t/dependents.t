@@ -27,9 +27,9 @@ is_deeply $dist_direct, $dist_deps, "Dependents for $test_dist match";
 is_deeply $module_direct, $dist_direct, 'Dependents for dist and module match';
 
 my $module_count = count_module_dependents($test_module);
-is $module_count, @$module_deps, "Dependent count for $test_module matches";
+is $module_count, scalar(@$module_deps), "Dependent count for $test_module matches";
 my $dist_count = count_dist_dependents($test_dist);
-is $dist_count, @$dist_deps, "Dependent count for $test_dist matches";
+is $dist_count, scalar(@$dist_deps), "Dependent count for $test_dist matches";
 is $module_count, $dist_count, 'Dependent counts match';
 
 done_testing;

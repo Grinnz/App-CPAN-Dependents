@@ -11,6 +11,6 @@ ok(@$dist_deps, "Found dependents for $test_dist");
 is_deeply $module_deps, $dist_deps, 'Dependents for dist and module match';
 
 my $recommended_deps = find_all_dependents(module => $test_module, recommends => 1);
-ok(@$recommended_deps > @$module_deps, "Found additional recommended dependents for $test_module");
+ok(scalar(@$recommended_deps) > scalar(@$module_deps), "Found additional recommended dependents for $test_module");
 
 done_testing;
