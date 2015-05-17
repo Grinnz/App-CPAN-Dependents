@@ -46,9 +46,8 @@ distributions that do not follow this behavior may lead to incorrect results.
   my $dependents = find_all_dependents(module => 'JSON::Tiny', recommends => 1);
 
 Find all dependent modules. This function is wrapped by the other functions in
-this module, but should be used directly if you wish to specify custom
-parameters. Returns an array reference of distribution names. The following
-parameters are accepted:
+this module, but may also be used directly. Returns an array reference of
+distribution names. The following parameters are accepted:
 
 =over
 
