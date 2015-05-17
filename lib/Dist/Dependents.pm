@@ -162,8 +162,8 @@ function encounters HTTP errors (including when querying a nonexistent module
 or distribution) or is unable to connect, it will die.
 
 This module will only find distributions that explicitly list prerequisites in
-metadata; C<dynamic_config> will not be used. Also, it assumes modules are
-"well-behaved" and thus declare all provided modules in the C<provides>
+metadata; C<dynamic_config> will not be used. Also, it assumes distributions
+are "well-behaved" and thus declare all provided modules in the C<provides>
 metadata, and only modules which they are authorized to provide. Any
 distributions that do not follow this behavior may lead to incorrect results.
 
