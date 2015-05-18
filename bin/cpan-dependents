@@ -3,19 +3,19 @@
 use strict;
 use warnings;
 use App::CPAN::Dependents 'find_all_dependents';
-use Getopt::Long;
+use Getopt::Long qw(:config no_auto_abbrev no_ignore_case bundling);
 
 our $VERSION = '0.001';
 
 my ($debug, $recommends, $suggests, $module, $dist, $count);
 
 GetOptions(
-	'debug'           => \$debug,
+	'debug|d'         => \$debug,
 	'with-recommends' => \$recommends,
 	'with-suggests'   => \$suggests,
-	'module'          => \$module,
-	'dist'            => \$dist,
-	'count'           => \$count,
+	'module|M'        => \$module,
+	'dist|D'          => \$dist,
+	'count|c'         => \$count,
 );
 
 my $subject = shift;
@@ -52,7 +52,7 @@ or module
 =head1 SYNOPSIS
 
   $ cpan-dependents JSON::Tiny
-  $ cpan-dependents --count JSON::Tiny
+  $ cpan-dependents -c JSON::Tiny
   $ cpan-dependents --dist JSON-Tiny
   $ cpan-dependents --with-recommends JSON-Tiny
 
@@ -80,28 +80,28 @@ distributions that do not follow this behavior may lead to incorrect results.
 
 =head1 OPTIONS
 
-=head2 module
+=head2 -M, --module
 
 Interpret target as module name.
 
-=head2 dist
+=head2 -D, --dist
 
 Interpret target as distribution name.
 
-=head2 count
+=head2 -c, --count
 
 Display total count of dependent distributions instead of the list of
 distribution names.
 
-=head2 with-recommends
+=head2 --with-recommends
 
 Include C<recommends> prerequisites when finding dependents.
 
-=head2 with-suggests
+=head2 --with-suggests
 
 Include C<suggests> prerequisites when finding dependents.
 
-=head2 debug
+=head2 -d, --debug
 
 Print debugging output to STDERR as it is retrieved.
 
