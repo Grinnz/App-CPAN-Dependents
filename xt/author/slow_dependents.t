@@ -1,4 +1,4 @@
-use Dist::Dependents 'find_all_dependents';
+use App::CPAN::Dependents 'find_all_dependents';
 use HTTP::Tiny;
 use Test::More;
 

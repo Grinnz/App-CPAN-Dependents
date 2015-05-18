@@ -1,4 +1,5 @@
-use Dist::Dependents 'find_all_dependents', 'find_module_dependents', 'find_dist_dependents',
+use App::CPAN::Dependents 'find_all_dependents',
+	'find_module_dependents', 'find_dist_dependents',
 	'count_module_dependents', 'count_dist_dependents';
 use HTTP::Tiny;
 use Test::More;
