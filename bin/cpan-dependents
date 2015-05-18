@@ -21,21 +21,15 @@ GetOptions(
 my $subject = shift;
 die "No module or distribution specified\n" unless defined $subject;
 
+my %options = (recommends => $recommends, suggests => $suggests, debug => $debug);
 my $dependents;
 if ($module) {
-	$dependents = find_all_dependents(module => $subject,
-		recommends => $recommends, suggests => $suggests, debug => $debug);
+	$dependents = find_all_dependents(module => $subject, %options);
 } elsif ($dist) {
-	$dependents = find_all_dependents(dist => $subject,
-		recommends => $recommends, suggests => $suggests, debug => $debug);
+	$dependents = find_all_dependents(dist => $subject, %options);
 } else {
-	my $err;
-	eval { $dependents = find_all_dependents(module => $subject,
-		recommends => $recommends, suggests => $suggests, debug => $debug); 1 } or $err = $@;
-	if ($err) {
-		$dependents = find_all_dependents(dist => $subject,
-			recommends => $recommends, suggests => $suggests, debug => $debug);
-	}
+	eval { $dependents = find_all_dependents(module => $subject, %options); 1 }
+		or $dependents = find_all_dependents(dist => $subject, %options);
 }
 
 if ($count) {
