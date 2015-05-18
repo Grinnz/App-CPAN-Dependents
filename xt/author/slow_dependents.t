@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use App::CPAN::Dependents 'find_all_dependents';
 use HTTP::Tiny;
 use Test::More;

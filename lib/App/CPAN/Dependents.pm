@@ -14,7 +14,6 @@ our @EXPORT_OK = qw(count_dist_dependents count_module_dependents
 	find_dist_dependents find_module_dependents find_all_dependents);
 
 use constant METACPAN_API_ENDPOINT => 'http://api.metacpan.org/v0/';
-use constant DEBUG => $ENV{DIST_DEPENDENTS_DEBUG} ? 1 : 0;
 
 sub count_dist_dependents { scalar @{find_dist_dependents(@_)} }
 sub count_module_dependents { scalar @{find_module_dependents(@_)} }
@@ -22,17 +21,16 @@ sub find_dist_dependents { find_all_dependents(dist => $_[0], %{$_[1] // {}}) }
 sub find_module_dependents { find_all_dependents(module => $_[0], %{$_[1] // {}}) }
 sub find_all_dependents {
 	my %options = @_;
-	my ($http, $module, $dist, $recommends, $suggests) =
-		@options{'http','module','dist','recommends','suggests'};
-	$http //= HTTP::Tiny->new;
-	my %find_options = (recommends => $recommends, suggests => $suggests);
+	my $http = delete $options{http} // HTTP::Tiny->new;
+	my $module = delete $options{module};
+	my $dist = delete $options{dist};
 	my %dependent_dists;
 	if (defined $dist) {
 		my $modules = _dist_modules($http, $dist);
-		_find_dependents($http, $modules, \%dependent_dists, \%find_options);
+		_find_dependents($http, $modules, \%dependent_dists, \%options);
 	} elsif (defined $module) {
 		my $dist = _module_dist($http, $module); # check if module is valid
-		_find_dependents($http, [$module], \%dependent_dists, \%find_options);
+		_find_dependents($http, [$module], \%dependent_dists, \%options);
 	} else {
 		croak 'No module or distribution defined';
 	}
@@ -43,10 +41,9 @@ sub _find_dependents {
 	my ($http, $modules, $dependent_dists, $options) = @_;
 	$dependent_dists //= {};
 	my $dists = _module_dependents($http, $modules, $options // {});
-	if (DEBUG) {
+	if ($options->{debug} and @$dists) {
 		my @names = map { $_->{name} } @$dists;
-		warn @$dists ? "Distributions depending on [@$modules]: @names\n"
-			: "No distributions dependent on [@$modules]\n" if DEBUG;
+		warn "Found dependent distributions: @names\n";
 	}
 	foreach my $dist (@$dists) {
 		my $name = $dist->{name};
@@ -54,7 +51,7 @@ sub _find_dependents {
 		$dependent_dists->{$name} = 1;
 		my $modules = $dist->{provides};
 		warn @$modules ? "Modules provided by $name: @$modules\n"
-			: "No modules provided by $name\n" if DEBUG;
+			: "No modules provided by $name\n" if $options->{debug};
 		_find_dependents($http, $modules, $dependent_dists) if @$modules;
 	}
 	return $dependent_dists;
@@ -202,6 +199,11 @@ the results. Defaults to false.
 Boolean value, if true then C<suggests> prerequisites will be considered in the
 results. Defaults to false.
 
+=item debug
+
+Boolean value, if true then debugging information will be printed to STDERR as
+it is retrieved.
+
 =back
 
 =head2 find_dist_dependents
@@ -236,11 +238,6 @@ parameters to pass.
 Wrapper function that calls L</"find_all_dependents"> with the specified module
 name, and returns the number of dependent distributions found. Optionally, the
 second argument may be a hash reference of additional parameters to pass.
-
-=head1 DEBUGGING
-
-The environment variable C<APP_CPAN_DEPENDENTS_DEBUG> can be set to C<1> to print
-information to STDERR as it is retrieved.
 
 =head1 AUTHOR
 

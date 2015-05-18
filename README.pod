@@ -74,6 +74,11 @@ the results. Defaults to false.
 Boolean value, if true then C<suggests> prerequisites will be considered in the
 results. Defaults to false.
 
+=item debug
+
+Boolean value, if true then debugging information will be printed to STDERR as
+it is retrieved.
+
 =back
 
 =head2 find_dist_dependents
@@ -108,11 +113,6 @@ parameters to pass.
 Wrapper function that calls L</"find_all_dependents"> with the specified module
 name, and returns the number of dependent distributions found. Optionally, the
 second argument may be a hash reference of additional parameters to pass.
-
-=head1 DEBUGGING
-
-The environment variable C<APP_CPAN_DEPENDENTS_DEBUG> can be set to C<1> to print
-information to STDERR as it is retrieved.
 
 =head1 AUTHOR
 
