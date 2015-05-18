@@ -1,6 +1,7 @@
 requires 'perl' => '5.008001';
 requires 'Carp';
 requires 'Exporter';
+requires 'Getopt::Long';
 requires 'HTTP::Tiny';
 requires 'JSON::Tiny';
 requires 'URI::Escape';
