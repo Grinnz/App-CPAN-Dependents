@@ -49,7 +49,7 @@ sub _find_dependents {
 		my $modules = $dist->{provides};
 		warn @$modules ? "Modules provided by $name: @$modules\n"
 			: "No modules provided by $name\n" if $options->{debug};
-		_find_dependents($http, $modules, $dependent_dists) if @$modules;
+		_find_dependents($http, $modules, $dependent_dists, $options) if @$modules;
 	}
 	return $dependent_dists;
 }
