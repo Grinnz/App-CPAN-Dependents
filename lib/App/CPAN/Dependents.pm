@@ -57,9 +57,17 @@ sub _find_dependents {
 sub _module_dependents {
 	my ($http, $modules, $options) = @_;
 	my $url = METACPAN_API_ENDPOINT . 'release/_search';
+	
 	my @relationships = ('requires');
 	push @relationships, 'recommends' if $options->{recommends};
 	push @relationships, 'suggests' if $options->{suggests};
+	my @dep_filters = (
+		{ terms => { 'dependency.module' => $modules } },
+		{ terms => { 'dependency.relationship' => \@relationships } },
+	);
+	push @dep_filters, { not => { term => { 'dependency.phase' => 'develop' } } }
+		unless $options->{develop};
+	
 	my %form = (
 		query => { match_all => {} },
 		size => 5000,
@@ -68,20 +76,19 @@ sub _module_dependents {
 			and => [
 				{ term => { 'release.maturity' => 'released' } },
 				{ term => { 'release.status' => 'latest' } },
-				{ nested => { path => 'release.dependency', filter => {
-					and => [
-						{ terms => { 'dependency.module' => $modules } },
-						{ terms => { 'dependency.relationship' => \@relationships } },
-						{ not => { term => { 'dependency.phase' => 'develop' } } },
-					],
-				} } },
+				{ nested => {
+					path => 'release.dependency',
+					filter => { and => \@dep_filters },
+				} },
 			],
 		},
 	);
+	
 	my $content = encode_json \%form;
 	my %headers = ( 'Content-Type' => 'application/json;charset=UTF-8' );
 	my $response = $http->post($url, { headers => \%headers, content => $content });
 	_http_err($response) unless $response->{success};
+	
 	my @results;
 	foreach my $hit (@{decode_json($response->{content})->{hits}{hits} || []}) {
 		my $name = $hit->{fields}{distribution};
@@ -190,6 +197,11 @@ the results. Defaults to false.
 
 Boolean value, if true then C<suggests> prerequisites will be considered in the
 results. Defaults to false.
+
+=item develop
+
+Boolean value, if true then C<develop> phase prerequisites will be considered
+in the results. Defaults to false.
 
 =item debug
 

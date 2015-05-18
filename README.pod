@@ -68,6 +68,11 @@ the results. Defaults to false.
 Boolean value, if true then C<suggests> prerequisites will be considered in the
 results. Defaults to false.
 
+=item develop
+
+Boolean value, if true then C<develop> phase prerequisites will be considered
+in the results. Defaults to false.
+
 =item debug
 
 Boolean value, if true then debugging information will be printed to STDERR as
