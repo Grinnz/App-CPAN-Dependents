@@ -8,7 +8,7 @@ use HTTP::Tiny;
 use JSON::Tiny 'decode_json', 'encode_json';
 use URI::Escape 'uri_escape';
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 our @EXPORT_OK = ('find_all_dependents');
 
