@@ -136,7 +136,7 @@ distribution or module
   
   # From the commandline
   $ cpan-dependents --with-recommends JSON::Tiny
-  $ cpan-dependents --count JSON-Tiny
+  $ cpan-dependents -c JSON-Tiny
 
 =head1 DESCRIPTION
 
