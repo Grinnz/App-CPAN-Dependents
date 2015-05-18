@@ -39,6 +39,8 @@ are "well-behaved" and thus declare all provided modules in the C<provides>
 metadata, and only modules which they are authorized to provide. Any
 distributions that do not follow this behavior may lead to incorrect results.
 
+See L<cpan-dependents> for command-line usage.
+
 =head1 FUNCTIONS
 
 =head2 find_all_dependents
@@ -127,6 +129,7 @@ the terms of the Artistic License version 2.0.
 
 =head1 SEE ALSO
 
-L<Test::DependentModules>, L<MetaCPAN::Client>, L<CPAN::Meta::Spec>
+L<cpan-dependents>, L<Test::DependentModules>, L<MetaCPAN::Client>,
+L<CPAN::Meta::Spec>
 
 =cut

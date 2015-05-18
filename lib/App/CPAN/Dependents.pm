@@ -17,11 +17,12 @@ use constant METACPAN_API_ENDPOINT => 'http://api.metacpan.org/v0/';
 
 sub count_dist_dependents { scalar @{find_dist_dependents(@_)} }
 sub count_module_dependents { scalar @{find_module_dependents(@_)} }
-sub find_dist_dependents { find_all_dependents(dist => $_[0], %{$_[1] // {}}) }
-sub find_module_dependents { find_all_dependents(module => $_[0], %{$_[1] // {}}) }
+sub find_dist_dependents { find_all_dependents(dist => $_[0], %{$_[1] || {}}) }
+sub find_module_dependents { find_all_dependents(module => $_[0], %{$_[1] || {}}) }
 sub find_all_dependents {
 	my %options = @_;
-	my $http = delete $options{http} // HTTP::Tiny->new;
+	my $http = delete $options{http};
+	$http = HTTP::Tiny->new unless defined $http;
 	my $module = delete $options{module};
 	my $dist = delete $options{dist};
 	my %dependent_dists;
@@ -39,8 +40,9 @@ sub find_all_dependents {
 
 sub _find_dependents {
 	my ($http, $modules, $dependent_dists, $options) = @_;
-	$dependent_dists //= {};
-	my $dists = _module_dependents($http, $modules, $options // {});
+	$dependent_dists = {} unless defined $dependent_dists;
+	$options = {} unless defined $options;
+	my $dists = _module_dependents($http, $modules, $options);
 	if ($options->{debug} and @$dists) {
 		my @names = map { $_->{name} } @$dists;
 		warn "Found dependent distributions: @names\n";
@@ -86,9 +88,10 @@ sub _module_dependents {
 	my $response = $http->post($url, { headers => \%headers, content => $content });
 	_http_err($response) unless $response->{success};
 	my @results;
-	foreach my $hit (@{decode_json($response->{content})->{hits}{hits} // []}) {
+	foreach my $hit (@{decode_json($response->{content})->{hits}{hits} || []}) {
 		my $name = $hit->{fields}{distribution};
-		my $provides = $hit->{fields}{provides} // [];
+		my $provides = $hit->{fields}{provides};
+		$provides = [] unless defined $provides;
 		$provides = [$provides] unless ref $provides;
 		push @results, { name => $name, provides => $provides };
 	}
@@ -100,7 +103,7 @@ sub _dist_modules {
 	my $url = METACPAN_API_ENDPOINT . 'release/' . uri_escape $dist;
 	my $response = $http->get($url);
 	_http_err($response) unless $response->{success};
-	return decode_json($response->{content})->{provides} // [];
+	return decode_json($response->{content})->{provides} || [];
 }
 
 sub _module_dist {
@@ -163,6 +166,8 @@ metadata; C<dynamic_config> will not be used. Also, it assumes distributions
 are "well-behaved" and thus declare all provided modules in the C<provides>
 metadata, and only modules which they are authorized to provide. Any
 distributions that do not follow this behavior may lead to incorrect results.
+
+See L<cpan-dependents> for command-line usage.
 
 =head1 FUNCTIONS
 
@@ -252,4 +257,5 @@ the terms of the Artistic License version 2.0.
 
 =head1 SEE ALSO
 
-L<Test::DependentModules>, L<MetaCPAN::Client>, L<CPAN::Meta::Spec>
+L<cpan-dependents>, L<Test::DependentModules>, L<MetaCPAN::Client>,
+L<CPAN::Meta::Spec>
