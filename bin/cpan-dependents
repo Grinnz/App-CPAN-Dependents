@@ -51,9 +51,17 @@ or module
 
 =head1 SYNOPSIS
 
+  # List dependent distributions for module JSON::Tiny
   $ cpan-dependents JSON::Tiny
+  
+  # Output count of distributions dependent on module JSON::Tiny
   $ cpan-dependents -c JSON::Tiny
-  $ cpan-dependents --dist JSON-Tiny
+  
+  # List dependent distributions for distribution JSON-Tiny
+  $ cpan-dependents -D JSON-Tiny
+  
+  # List dependent distributions for distribution JSON-Tiny,
+  # including "recommends" dependencies
   $ cpan-dependents --with-recommends JSON-Tiny
 
 =head1 DESCRIPTION
@@ -62,10 +70,10 @@ Command-line script to list or count the dependent distributions for a
 particular CPAN distribution or module, using L<App::CPAN::Dependents>. The
 first non-option argument is used as the target module or distribution.
 Dependent distributions will be output line by line when complete, or the total
-number of distributions will be output with the L</"count"> option.
+number of distributions will be output with the C<--count> option.
 
-If neither C</"module"> nor C</"dist"> are specified as options, the target
-will be tried first as a module, then as a distribution if unsuccessful.
+If neither C<--module> nor C<--dist> are specified as options, the target will
+be tried first as a module, then as a distribution if unsuccessful.
 
 This script uses the MetaCPAN API, and must perform several requests
 recursively, so it may take a long time (sometimes minutes) to complete. If the
