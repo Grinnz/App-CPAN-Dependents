@@ -3,6 +3,7 @@ use warnings;
 use App::CPAN::Dependents 'find_all_dependents';
 use HTTP::Tiny;
 use Test::More;
+use Test::RequiresInternet 'api.metacpan.org' => 'http';
 
 my $http = HTTP::Tiny->new(timeout => 5);
 
