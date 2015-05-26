@@ -37,7 +37,8 @@
       },
       "test" : {
          "requires" : {
-            "Test::More" : "0.88"
+            "Test::More" : "0.88",
+            "Test::RequiresInternet" : "0"
          }
       }
    },

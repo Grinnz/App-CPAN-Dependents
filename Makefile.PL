@@ -28,7 +28,8 @@ my %WriteMakefileArgs = (
     "URI::Escape" => 0
   },
   "TEST_REQUIRES" => {
-    "Test::More" => "0.88"
+    "Test::More" => "0.88",
+    "Test::RequiresInternet" => 0
   },
   "VERSION" => "0.003",
   "test" => {
@@ -45,6 +46,7 @@ my %FallbackPrereqs = (
   "HTTP::Tiny" => "0.014",
   "JSON::Tiny" => "0.41",
   "Test::More" => "0.88",
+  "Test::RequiresInternet" => 0,
   "URI::Escape" => 0
 );
 

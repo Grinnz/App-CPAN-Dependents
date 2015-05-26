@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+0.003     2015-05-26 12:08:20 EDT
+  - use Test::RequiresInternet to check for network connectivity
+
 0.002     2015-05-18 11:22:33 EDT
   - Set required versions for some prereqs
 
