@@ -1,4 +1,5 @@
 {{$NEXT}}
+  - Change installer to Module::Build::Tiny
 
 0.003     2015-05-26 12:08:20 EDT
   - use Test::RequiresInternet to check for network connectivity
