@@ -31,7 +31,8 @@
       },
       "develop" : {
          "requires" : {
-            "Dist::Zilla::PluginBundle::Author::DBOOK" : "0.015",
+            "Dist::Zilla::Plugin::MakeMaker::Fallback" : "0",
+            "Dist::Zilla::PluginBundle::Author::DBOOK" : "0.018",
             "Pod::Coverage::TrustPod" : "0",
             "Test::Pod" : "1.41",
             "Test::Pod::Coverage" : "1.08"
@@ -41,7 +42,7 @@
          "requires" : {
             "Carp" : "0",
             "Exporter" : "0",
-            "Getopt::Long" : "2.24",
+            "Getopt::Long::Modern" : "0",
             "HTTP::Tiny" : "0.014",
             "JSON::Tiny" : "0.41",
             "URI::Escape" : "0",
@@ -58,7 +59,7 @@
    "provides" : {
       "App::CPAN::Dependents" : {
          "file" : "lib/App/CPAN/Dependents.pm",
-         "version" : "0.004"
+         "version" : "0.005"
       }
    },
    "release_status" : "stable",
@@ -73,7 +74,7 @@
          "web" : "https://github.com/Grinnz/App-CPAN-Dependents"
       }
    },
-   "version" : "0.004",
+   "version" : "0.005",
    "x_contributors" : [
       "Dan Book <grinnz@gmail.com>",
       "Dan Book <grinnz@grinnz.com>"
