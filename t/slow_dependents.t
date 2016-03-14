@@ -1,5 +1,8 @@
 use strict;
 use warnings;
+
+use if !$ENV{AUTOMATED_TESTING}, 'Test::More' => skip_all => 'these tests are for automated testing';
+
 use App::CPAN::Dependents 'find_all_dependents';
 use HTTP::Tiny;
 use Test::More;
