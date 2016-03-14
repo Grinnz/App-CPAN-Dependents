@@ -1,5 +1,8 @@
 {{$NEXT}}
+
+0.005     2016-03-14 14:44:47 EDT
   - Use Getopt::Long::Modern
+  - Updates to test suite for automated testing
 
 0.004     2015-08-28 19:21:55 EDT
   - Change installer to Module::Build::Tiny
