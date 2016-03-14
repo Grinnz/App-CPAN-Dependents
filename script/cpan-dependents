@@ -5,7 +5,7 @@ use warnings;
 use App::CPAN::Dependents 'find_all_dependents';
 use Getopt::Long::Modern;
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 my ($module, $dist, $count, $debug, $recommends, $suggests, $develop);
 
