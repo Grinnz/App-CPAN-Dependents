@@ -36,8 +36,8 @@ sub find_all_dependents {
 
 sub _find_dependents {
 	my ($mcpan, $modules, $dependent_dists, $options) = @_;
-	$dependent_dists = {} unless defined $dependent_dists;
-	$options = {} unless defined $options;
+	$dependent_dists //= {};
+	$options //= {};
 	my $dists = _module_dependents($mcpan, $modules, $options);
 	if ($options->{debug} and @$dists) {
 		my @names = map { $_->{name} } @$dists;
@@ -87,7 +87,7 @@ sub _module_dependents {
 	my @results;
 	while (my $hit = $response->next) {
 		my $name = $hit->distribution;
-		my $provides = $hit->provides || [];
+		my $provides = $hit->provides // [];
 		$provides = [$provides] unless ref $provides;
 		push @results, { name => $name, provides => $provides };
 	}
@@ -96,14 +96,14 @@ sub _module_dependents {
 
 sub _dist_modules {
 	my ($mcpan, $dist) = @_;
-	my $response = $mcpan->release($dist);
-	return defined $response ? ($response->provides || []) : [];
+	my $response = $mcpan->release($dist) // return [];
+	return $response->provides // [];
 }
 
 sub _module_dist {
 	my ($mcpan, $module) = @_;
-	my $response = $mcpan->module($module);
-	return defined $response ? $response->distribution : undef;
+	my $response = $mcpan->module($module) // return undef;
+	return $response->distribution;
 }
 
 1;

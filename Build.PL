@@ -18,7 +18,7 @@ if (!grep { $_ } values %errors)
     use strict;
     use warnings;
 
-    use 5.008001;
+    use 5.010001;
     # use Module::Build::Tiny 0.034;
     Module::Build::Tiny::Build_PL();
 }
@@ -93,7 +93,7 @@ EOW
         "Exporter" => 0,
         "Getopt::Long::Modern" => 0,
         "MetaCPAN::Client" => "2.000000",
-        "perl" => "5.008001"
+        "perl" => "5.010001"
       },
       "script_files" => [
         "script/cpan-dependents"

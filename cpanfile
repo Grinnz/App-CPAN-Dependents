@@ -1,4 +1,4 @@
-requires 'perl' => '5.008001';
+requires 'perl' => '5.010001';
 requires 'Carp';
 requires 'Exporter';
 requires 'Getopt::Long::Modern';

@@ -42,7 +42,7 @@
             "Exporter" : "0",
             "Getopt::Long::Modern" : "0",
             "MetaCPAN::Client" : "2.000000",
-            "perl" : "5.008001"
+            "perl" : "5.010001"
          }
       },
       "test" : {
