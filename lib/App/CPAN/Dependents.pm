@@ -4,29 +4,25 @@ use strict;
 use warnings;
 use Carp 'croak';
 use Exporter 'import';
-use HTTP::Tiny;
-use JSON::Tiny 'decode_json', 'encode_json';
-use URI::Escape 'uri_escape';
+use MetaCPAN::Client;
 
 our $VERSION = '0.006';
 
 our @EXPORT_OK = ('find_all_dependents');
 
-use constant METACPAN_API_ENDPOINT => 'http://api.metacpan.org/v0/';
-
 sub find_all_dependents {
 	my %options = @_;
-	my $http = delete $options{http};
-	$http = HTTP::Tiny->new unless defined $http;
+	my $mcpan = delete $options{mcpan};
+	$mcpan = MetaCPAN::Client->new unless defined $mcpan;
 	my $module = delete $options{module};
 	my $dist = delete $options{dist};
 	my %dependent_dists;
 	if (defined $dist) {
-		my $modules = _dist_modules($http, $dist);
-		_find_dependents($http, $modules, \%dependent_dists, \%options);
+		my $modules = _dist_modules($mcpan, $dist);
+		_find_dependents($mcpan, $modules, \%dependent_dists, \%options);
 	} elsif (defined $module) {
-		my $dist = _module_dist($http, $module); # check if module is valid
-		_find_dependents($http, [$module], \%dependent_dists, \%options);
+		my $dist = _module_dist($mcpan, $module); # check if module is valid
+		_find_dependents($mcpan, [$module], \%dependent_dists, \%options);
 	} else {
 		croak 'No module or distribution defined';
 	}
@@ -34,10 +30,10 @@ sub find_all_dependents {
 }
 
 sub _find_dependents {
-	my ($http, $modules, $dependent_dists, $options) = @_;
+	my ($mcpan, $modules, $dependent_dists, $options) = @_;
 	$dependent_dists = {} unless defined $dependent_dists;
 	$options = {} unless defined $options;
-	my $dists = _module_dependents($http, $modules, $options);
+	my $dists = _module_dependents($mcpan, $modules, $options);
 	if ($options->{debug} and @$dists) {
 		my @names = map { $_->{name} } @$dists;
 		warn "Found dependent distributions: @names\n";
@@ -49,14 +45,13 @@ sub _find_dependents {
 		my $modules = $dist->{provides};
 		warn @$modules ? "Modules provided by $name: @$modules\n"
 			: "No modules provided by $name\n" if $options->{debug};
-		_find_dependents($http, $modules, $dependent_dists, $options) if @$modules;
+		_find_dependents($mcpan, $modules, $dependent_dists, $options) if @$modules;
 	}
 	return $dependent_dists;
 }
 
 sub _module_dependents {
-	my ($http, $modules, $options) = @_;
-	my $url = METACPAN_API_ENDPOINT . 'release/_search';
+	my ($mcpan, $modules, $options) = @_;
 	
 	my @relationships = ('requires');
 	push @relationships, 'recommends' if $options->{recommends};
@@ -68,32 +63,26 @@ sub _module_dependents {
 	push @dep_filters, { not => { term => { 'dependency.phase' => 'develop' } } }
 		unless $options->{develop};
 	
-	my %form = (
-		query => { match_all => {} },
-		size => 5000,
-		fields => [ 'distribution', 'provides' ],
-		filter => {
-			and => [
-				{ term => { 'release.maturity' => 'released' } },
-				{ term => { 'release.status' => 'latest' } },
-				{ nested => {
-					path => 'release.dependency',
-					filter => { and => \@dep_filters },
-				} },
-			],
-		},
+	my %filter = (
+		and => [
+			{ term => { maturity => 'released' } },
+			{ term => { status => 'latest' } },
+			{ nested => {
+				path => 'dependency',
+				filter => { and => \@dep_filters },
+			} },
+		],
 	);
 	
-	my $content = encode_json \%form;
-	my %headers = ( 'Content-Type' => 'application/json;charset=UTF-8' );
-	my $response = $http->post($url, { headers => \%headers, content => $content });
-	_http_err($response) unless $response->{success};
+	my $response = $mcpan->all('releases', {
+		fields => [ 'distribution', 'provides' ],
+		es_filter => \%filter,
+	});
 	
 	my @results;
-	foreach my $hit (@{decode_json($response->{content})->{hits}{hits} || []}) {
-		my $name = $hit->{fields}{distribution};
-		my $provides = $hit->{fields}{provides};
-		$provides = [] unless defined $provides;
+	while (my $hit = $response->next) {
+		my $name = $hit->distribution;
+		my $provides = $hit->provides || [];
 		$provides = [$provides] unless ref $provides;
 		push @results, { name => $name, provides => $provides };
 	}
@@ -101,19 +90,15 @@ sub _module_dependents {
 }
 
 sub _dist_modules {
-	my ($http, $dist) = @_;
-	my $url = METACPAN_API_ENDPOINT . 'release/' . uri_escape $dist;
-	my $response = $http->get($url);
-	_http_err($response) unless $response->{success};
-	return decode_json($response->{content})->{provides} || [];
+	my ($mcpan, $dist) = @_;
+	my $response = $mcpan->release($dist);
+	return defined $response ? ($response->provides || []) : [];
 }
 
 sub _module_dist {
-	my ($http, $module) = @_;
-	my $url = METACPAN_API_ENDPOINT . 'module/' . uri_escape $module;
-	my $response = $http->get($url);
-	_http_err($response) unless $response->{success};
-	return decode_json($response->{content})->{distribution};
+	my ($mcpan, $module) = @_;
+	my $response = $mcpan->module($module);
+	return defined $response ? $response->distribution : undef;
 }
 
 sub _http_err {
@@ -182,10 +167,10 @@ The module name to find dependents for. Mutually exclusive with C<dist>.
 
 The distribution to find dependents for. Mutually exclusive with C<module>.
 
-=item http
+=item mcpan
 
-Optional L<HTTP::Tiny> object to use for querying MetaCPAN. If not specified, a
-default L<HTTP::Tiny> object will be used.
+Optional L<MetaCPAN::Client> object to use for querying MetaCPAN. If not
+specified, a default L<MetaCPAN::Client> object will be used.
 
 =item recommends
 
