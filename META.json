@@ -525,19 +525,6 @@
             "version" : "6.009"
          },
          {
-            "class" : "Dist::Zilla::Plugin::MakeMaker::Fallback",
-            "config" : {
-               "Dist::Zilla::Plugin::MakeMaker::Awesome" : {
-                  "version" : "0.38"
-               },
-               "Dist::Zilla::Role::TestRunner" : {
-                  "default_jobs" : 1
-               }
-            },
-            "name" : "MakeMaker::Fallback",
-            "version" : "0.023"
-         },
-         {
             "class" : "Dist::Zilla::Plugin::FinderCode",
             "name" : ":InstallModules",
             "version" : "6.009"
