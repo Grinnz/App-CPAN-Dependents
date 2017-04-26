@@ -6,14 +6,19 @@ use Carp 'croak';
 use Exporter 'import';
 use MetaCPAN::Client;
 
-our $VERSION = '0.006';
+our $VERSION = '1.000';
 
 our @EXPORT_OK = ('find_all_dependents');
 
 sub find_all_dependents {
 	my %options = @_;
 	my $mcpan = delete $options{mcpan};
-	$mcpan = MetaCPAN::Client->new unless defined $mcpan;
+	unless (defined $mcpan) {
+		my $http = delete $options{http};
+		my %mcpan_params;
+		$mcpan_params{ua} = $http if defined $http;
+		$mcpan = MetaCPAN::Client->new(%mcpan_params);
+	}
 	my $module = delete $options{module};
 	my $dist = delete $options{dist};
 	my %dependent_dists;
@@ -101,18 +106,6 @@ sub _module_dist {
 	return defined $response ? $response->distribution : undef;
 }
 
-sub _http_err {
-	my $response = shift;
-	return if $response->{success};
-	if ($response->{status} == 599) {
-		chomp(my $err = $response->{content});
-		die "HTTP error: $err\n";
-	} else {
-		chomp(my $reason = $response->{reason});
-		die "HTTP $response->{status}: $reason\n";
-	}
-}
-
 1;
 
 =head1 NAME
@@ -167,10 +160,16 @@ The module name to find dependents for. Mutually exclusive with C<dist>.
 
 The distribution to find dependents for. Mutually exclusive with C<module>.
 
+=item http
+
+Optional L<HTTP::Tiny> object to use for building the default
+L<MetaCPAN::Client> object.
+
 =item mcpan
 
 Optional L<MetaCPAN::Client> object to use for querying MetaCPAN. If not
-specified, a default L<MetaCPAN::Client> object will be used.
+specified, a default L<MetaCPAN::Client> object will be created using
+L</"http"> if specified.
 
 =item recommends
 
