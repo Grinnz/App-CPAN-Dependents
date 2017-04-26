@@ -41,7 +41,7 @@
             "Carp" : "0",
             "Exporter" : "0",
             "Getopt::Long::Modern" : "0",
-            "MetaCPAN::Client" : "2.000000",
+            "MetaCPAN::Client" : "2.004000",
             "perl" : "5.010001"
          }
       },
