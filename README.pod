@@ -52,10 +52,10 @@ The module name to find dependents for. Mutually exclusive with C<dist>.
 
 The distribution to find dependents for. Mutually exclusive with C<module>.
 
-=item http
+=item mcpan
 
-Optional L<HTTP::Tiny> object to use for querying MetaCPAN. If not specified, a
-default L<HTTP::Tiny> object will be used.
+Optional L<MetaCPAN::Client> object to use for querying MetaCPAN. If not
+specified, a default L<MetaCPAN::Client> object will be used.
 
 =item recommends
 
