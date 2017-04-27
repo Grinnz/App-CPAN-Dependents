@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+1.000     2017-04-26 22:10:40 EDT
   - Use MetaCPAN::Client to query via the new MetaCPAN API v1
   - Added mcpan parameter to find_all_dependents for specifying a
     MetaCPAN::Client object to use
