@@ -7,6 +7,8 @@ use Getopt::Long::Modern;
 
 our $VERSION = '0.006';
 
+my $usage_msg = "Usage: $0 [options] <distribution|module>";
+
 my ($module, $dist, $count, $debug, $recommends, $suggests, $develop);
 
 GetOptions(
@@ -17,10 +19,10 @@ GetOptions(
 	'with-recommends' => \$recommends,
 	'with-suggests'   => \$suggests,
 	'with-develop'    => \$develop,
-);
+) or die "$usage_msg\n";
 
 my $subject = shift;
-die "No module or distribution specified\n" unless defined $subject;
+die "$usage_msg\n" unless defined $subject;
 
 my %options = (recommends => $recommends, suggests => $suggests,
 	develop => $develop, debug => $debug);
