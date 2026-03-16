@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+1.001     2026-03-15 23:38:33 EDT
   - Fix es_filter in MetaCPAN::Client search for ES 8
 
 1.000     2017-04-26 22:10:40 EDT
