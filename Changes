@@ -1,4 +1,5 @@
 {{$NEXT}}
+  - Require MetaCPAN::Client 2.037000 for ES 8 queries
 
 1.001     2026-03-15 23:38:33 EDT
   - Fix es_filter in MetaCPAN::Client search for ES 8

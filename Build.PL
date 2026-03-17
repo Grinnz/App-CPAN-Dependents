@@ -86,7 +86,7 @@ EOW
         "Dan Book <dbook\@cpan.org>"
       ],
       "dist_name" => "App-CPAN-Dependents",
-      "dist_version" => "1.001",
+      "dist_version" => "1.002",
       "license" => "artistic_2",
       "module_name" => "App::CPAN::Dependents",
       "recursive_test_files" => 1,
@@ -94,7 +94,7 @@ EOW
         "Carp" => 0,
         "Exporter" => 0,
         "Getopt::Long::Modern" => 0,
-        "MetaCPAN::Client" => "2.006000",
+        "MetaCPAN::Client" => "2.037000",
         "perl" => "5.010001"
       },
       "script_files" => [
