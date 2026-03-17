@@ -100,6 +100,9 @@ jobs:
       - name: test with Build.PL
         if: ${{ hashFiles('Build.PL') != '' }}
         run: ./Build test
+        env:
+          AUTHOR_TESTING: 1
+          RELEASE_TESTING: 1
       - name: configure with Makefile.PL
         if: ${{ hashFiles('Build.PL') == '' }}
         run: perl Makefile.PL
