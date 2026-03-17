@@ -6,7 +6,7 @@ use Carp 'croak';
 use Exporter 'import';
 use MetaCPAN::Client;
 
-our $VERSION = '1.002';
+our $VERSION = '1.003';
 
 our @EXPORT_OK = ('find_all_dependents');
 
