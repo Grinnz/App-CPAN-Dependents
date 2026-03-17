@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+1.002     2026-03-16 22:46:44 EDT
   - Require MetaCPAN::Client 2.037000 for ES 8 queries
 
 1.001     2026-03-15 23:38:33 EDT
